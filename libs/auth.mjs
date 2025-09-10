@@ -210,7 +210,7 @@ router.post('/registerRequest', csrfCheck, sessionCheck, async (req, res) => {
     const attestationType = 'none';
 
     // Generate registration options for WebAuthn create
-    const options = generateRegistrationOptions({
+    const options = await generateRegistrationOptions({
       rpName: process.env.RP_NAME,
       rpID: process.env.HOSTNAME,
       userID: user.id,
