@@ -43,6 +43,7 @@ app.use(session({
 }));
 
 const RP_NAME = 'Passkeys Codelab';
+const port = process.env.GLITCH_DEBUGGER ? null : 8080;
 
 app.use((req, res, next) => {
   if (process.env.PROJECT_DOMAIN) {
@@ -51,7 +52,7 @@ app.use((req, res, next) => {
     process.env.HOSTNAME = req.hostname;
   }
   const protocol = /^localhost/.test(process.env.HOSTNAME) ? 'http' : 'https';
-  process.env.ORIGIN = `${protocol}://${process.env.HOSTNAME}`;
+  process.env.ORIGIN = `${protocol}://${process.env.HOSTNAME}${port ? `:${port}` : ''}`;
   process.env.RP_NAME = RP_NAME;
   if (
     req.get('x-forwarded-proto') &&
@@ -145,7 +146,6 @@ app.get('/test', (req, res) => {
 app.use('/auth', auth);
 
 // listen for req :)
-const port = process.env.GLITCH_DEBUGGER ? null : 8080;
 const listener = app.listen(port || process.env.PORT, () => {
   console.log('Your app is listening on port ' + listener.address().port);
 });
