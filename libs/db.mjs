@@ -16,7 +16,9 @@
  */
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node'
+import { mkdir } from 'fs/promises';
 
+await mkdir(".data", { recursive: true });
 const adapter = new JSONFile('.data/db.json');
 const db = new Low(adapter);
 await db.read();
