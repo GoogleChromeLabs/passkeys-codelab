@@ -196,8 +196,7 @@ router.post('/registerRequest', csrfCheck, sessionCheck, async (req, res) => {
     const credentials = Credentials.findByUserId(user.id);
     for (const cred of credentials) {
       excludeCredentials.push({
-        id: isoBase64URL.toBuffer(cred.id),
-        type: 'public-key',
+        id: cred.id,
         transports: cred.transports,
       });
     }
@@ -213,7 +212,7 @@ router.post('/registerRequest', csrfCheck, sessionCheck, async (req, res) => {
     const options = await generateRegistrationOptions({
       rpName: process.env.RP_NAME,
       rpID: process.env.HOSTNAME,
-      userID: user.id,
+      userID: isoBase64URL.toBuffer(user.id),
       userName: user.username,
       userDisplayName: user.displayName || user.username,
       // Prompt users for additional information about the authenticator.
@@ -254,7 +253,7 @@ router.post('/registerResponse', csrfCheck, sessionCheck, async (req, res) => {
 
     const { credentialPublicKey, credentialID } = registrationInfo;
 
-    const base64CredentialID = isoBase64URL.fromBuffer(credentialID);
+    const base64CredentialID = credentialID;
     const base64PublicKey = isoBase64URL.fromBuffer(credentialPublicKey);
 
     const { user } = res.locals;
@@ -316,7 +315,7 @@ router.post('/signinResponse', csrfCheck, async (req, res) => {
     // Base64URL decode some values
     const authenticator = {
       credentialPublicKey: isoBase64URL.toBuffer(cred.publicKey),
-      credentialID: isoBase64URL.toBuffer(cred.id),
+      credentialID: cred.id,
       transports: cred.transports,
     };
 
