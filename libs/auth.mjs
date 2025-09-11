@@ -251,10 +251,10 @@ router.post('/registerResponse', csrfCheck, sessionCheck, async (req, res) => {
       throw new Error('User verification failed.');
     }
 
-    const { credentialPublicKey, credentialID } = registrationInfo;
+    const { credential: { publicKey, id, transports } } = registrationInfo;
 
-    const base64CredentialID = credentialID;
-    const base64PublicKey = isoBase64URL.fromBuffer(credentialPublicKey);
+    const base64CredentialID = id;
+    const base64PublicKey = isoBase64URL.fromBuffer(publicKey);
 
     const { user } = res.locals;
     
@@ -262,7 +262,7 @@ router.post('/registerResponse', csrfCheck, sessionCheck, async (req, res) => {
       id: base64CredentialID,
       publicKey: base64PublicKey,
       name: req.useragent.platform, // Name the passkey with a user-agent string
-      transports: response.response.transports,
+      transports,
       user_id: user.id,
     });
 
@@ -313,9 +313,9 @@ router.post('/signinResponse', csrfCheck, async (req, res) => {
     }
 
     // Base64URL decode some values
-    const authenticator = {
-      credentialPublicKey: isoBase64URL.toBuffer(cred.publicKey),
-      credentialID: cred.id,
+    const credential = {
+      publicKey: isoBase64URL.toBuffer(cred.publicKey),
+      id: cred.id,
       transports: cred.transports,
     };
 
@@ -325,7 +325,7 @@ router.post('/signinResponse', csrfCheck, async (req, res) => {
       expectedChallenge,
       expectedOrigin,
       expectedRPID,
-      authenticator,
+      credential,
       requireUserVerification: false,
     });
 
