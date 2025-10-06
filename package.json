@@ -33,7 +33,7 @@
     "sass": "^1.59.3",
     "webpack": "^5.76.0",
     "webpack-cli": "^5.0.1",
-    "lit": "^2.6.1",
+    "lit": "^3.3.1",
     "material-components-web": "^14.0.0"
   },
   "engines": {
