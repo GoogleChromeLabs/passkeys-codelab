@@ -14,16 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node'
+import { JSONFilePreset } from 'lowdb/node'
 import { mkdir } from 'fs/promises';
 
 await mkdir(".data", { recursive: true });
-const adapter = new JSONFile('.data/db.json');
-const db = new Low(adapter);
+const db = await JSONFilePreset('.data/db.json', { users: [], credentials: [] });
 await db.read();
-
-db.data ||= { users: [], credentials: [] } ;
 
 /**
  * User data schema
