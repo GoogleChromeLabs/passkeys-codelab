@@ -146,6 +146,9 @@ app.get('/test', (req, res) => {
 app.use('/auth', auth);
 
 // listen for req :)
-const listener = app.listen(port || process.env.PORT, () => {
+const listener = app.listen(port || process.env.PORT, (error) => {
+  if (error) {
+    throw error;
+  }
   console.log('Your app is listening on port ' + listener.address().port);
 });
