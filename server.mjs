@@ -22,6 +22,7 @@ import hbs from 'hbs';
 import { auth } from './libs/auth.mjs';
 const app = express();
 import useragent from 'express-useragent';
+import bodyParser from 'body-parser';
 
 app.set('view engine', 'html');
 app.engine('html', hbs.__express);
@@ -41,6 +42,7 @@ app.use(session({
     sameSite: process.env.IS_LOCAL ? undefined : 'none'
   }
 }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 const RP_NAME = 'Passkeys Codelab';
 const port = process.env.GLITCH_DEBUGGER ? null : 8080;
