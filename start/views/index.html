@@ -42,7 +42,8 @@
       Enter a username
     </h2>
     <form id="form" method="POST" action="/auth/username" class="center">
-      <mdui-text-field id="username" label="Username" name="username" autocomplete="username webauthn"
+      <!-- TODO: Add passkeys to the browser autofill: Enable conditional UI. -->
+      <mdui-text-field id="username" label="Username" name="username" autocomplete="username"
         autofocus></mdui-text-field>
       <div class="hidden">
         <mdui-text-field id="password" label="Password" type="password" name="password" autocomplete="current-password"
@@ -57,7 +58,6 @@
         $,
         _fetch,
         loading,
-        authenticate
       } from '/client.js';
 
       const form = $('#form');
@@ -77,35 +77,6 @@
       });
 
       // TODO: Add passkeys to the browser autofill: Detect features, invoke WebAuthn, and enable a conditional UI.
-
-      // Is WebAuthn available on this browser?
-      if (window.PublicKeyCredential &&
-        PublicKeyCredential.isConditionalMediationAvailable) {
-        try {
-          // Is conditional UI available in this browser?
-          const cma = await PublicKeyCredential.isConditionalMediationAvailable();
-          if (cma) {
-            // If conditional UI is available, invoke the authenticate() function.
-            const user = await authenticate();
-            if (user) {
-              // Proceed only when authentication succeeds.
-              $('#username').value = user.username;
-              loading.start();
-              location.href = '/home';
-            } else {
-              throw new Error('User not found.');
-            }
-          }
-        } catch (e) {
-          loading.stop();
-          // A NotAllowedError indicates that the user canceled the operation.
-          if (e.name !== 'NotAllowedError') {
-            console.error(e);
-            alert(e.message);
-          }
-        }
-      }
-
     </script>
   </main>
 </body>
