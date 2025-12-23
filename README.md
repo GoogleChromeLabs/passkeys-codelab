@@ -5,7 +5,9 @@ This folder contains the source code for the passkey codelab. It gives an introd
 
 ## Run the demo
 
-First, install dependencies with `npm install`.
+First, change to the right directory. Use `start` if you're following the codelab or `complete` if you want to see the finished demo.
+
+Next, install dependencies with `npm install`.
 
 Then, run with the following command:
 
