@@ -80,11 +80,11 @@
 
       // Is WebAuthn available on this browser?
       if (window.PublicKeyCredential &&
-        PublicKeyCredential.isConditionalMediationAvailable) {
+          PublicKeyCredential.getClientCapabilities) {
         try {
           // Is conditional UI available in this browser?
-          const cma = await PublicKeyCredential.isConditionalMediationAvailable();
-          if (cma) {
+          const capabilities = await PublicKeyCredential.getClientCapabilities();
+          if (capabilities.conditionalGet) {
             // If conditional UI is available, invoke the authenticate() function.
             const user = await authenticate();
             if (user) {

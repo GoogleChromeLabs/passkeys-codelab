@@ -133,12 +133,10 @@
       PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable &&
       PublicKeyCredential.isConditionalMediationAvailable) {
       try {
+        const capabilities = await PublicKeyCredential.getClientCapabilities();
         // Is conditional UI available in this browser?
-        const results = await Promise.all([
-          PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(),
-          PublicKeyCredential.isConditionalMediationAvailable()
-        ]);
-        if (results.every(r => r === true)) {
+        if (capabilities.conditionalGet === true &&
+          capabilities.passkeyPlatformAuthenticator === true) {
           // If conditional UI is available, reveal the Create a passkey button.
           createPasskey.classList.remove('hidden');
         } else {
@@ -158,7 +156,7 @@
     async function renderCredentials() {
       const res = await _fetch('/auth/getKeys');
       const list = $('#list');
-      const creds = html`${res.length > 0 ? html`
+      const creds = res.length > 0 ? html`
         <mdui-list>
           ${res.map(cred => html`
             <mdui-list-item>
@@ -169,7 +167,7 @@
         </mdui-list>` : html`
         <mdui-list>
           <mdui-list-item>No credentials found.</mdui-list-item>
-        </mdui-list>`}`;
+        </mdui-list>`;
       render(creds, list);
     };
 
