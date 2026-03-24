@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "webpack",
-    "start": "node server.mjs"
+    "start": "IS_LOCAL=1 node server.mjs"
   },
   "dependencies": {
     "@babel/core": "^7.28.4",

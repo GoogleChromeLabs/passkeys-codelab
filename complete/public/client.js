@@ -40,22 +40,6 @@ export async function _fetch(path, payload = '') {
   }
 };
 
-export const base64url = {
-  encode: function(buffer) {
-    const base64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
-    return base64.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-  },
-  decode: function(base64url) {
-    const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
-    const binStr = window.atob(base64);
-    const bin = new Uint8Array(binStr.length);
-    for (let i = 0; i < binStr.length; i++) {
-      bin[i] = binStr.charCodeAt(i);
-    }
-    return bin.buffer;
-  }
-}
-
 class Loading {
   constructor() {
     this.progress = $('#progress');
@@ -84,19 +68,12 @@ export async function registerCredential() {
 
   // TODO: Add an ability to create a passkey: Obtain the challenge and other options from the server endpoint.
 
-  const options = await _fetch('/auth/registerRequest');
+  const _options = await _fetch('/auth/registerRequest');
 
   // TODO: Add an ability to create a passkey: Create a credential.
 
-  // Base64URL decode some values.
-  options.user.id = base64url.decode(options.user.id);
-  options.challenge = base64url.decode(options.challenge);
-
-  if (options.excludeCredentials) {
-    for (let cred of options.excludeCredentials) {
-      cred.id = base64url.decode(cred.id);
-    }
-  }
+  // Deserialize and decode the `PublicKeyCredential.parseCreationOptionsFromJSON()`.
+  const options = PublicKeyCredential.parseCreationOptionsFromJSON(_options);
 
   // Use platform authenticator and discoverable credential.
   options.authenticatorSelection = {
@@ -111,28 +88,8 @@ export async function registerCredential() {
 
   // TODO: Add an ability to create a passkey: Register the credential to the server endpoint.
 
-  const credential = {};
-  credential.id = cred.id;
-  credential.rawId = cred.id; // Pass a Base64URL encoded ID string.
-  credential.type = cred.type;
-
-  // The authenticatorAttachment string in the PublicKeyCredential object is a new addition in WebAuthn L3.
-  if (cred.authenticatorAttachment) {
-    credential.authenticatorAttachment = cred.authenticatorAttachment;
-  }
-
-  // Base64URL encode some values.
-  const clientDataJSON = base64url.encode(cred.response.clientDataJSON);
-  const attestationObject = base64url.encode(cred.response.attestationObject);
-
-  // Obtain transports.
-  const transports = cred.response.getTransports ? cred.response.getTransports() : [];
-
-  credential.response = {
-    clientDataJSON,
-    attestationObject,
-    transports
-  };
+  // Encode and serialize the `PublicKeyCredential`.
+  const credential = JSON.stringify(cred);
 
   return await _fetch('/auth/registerResponse', credential);
 };
@@ -143,12 +100,12 @@ export async function authenticate() {
 
   // TODO: Add an ability to authenticate with a passkey: Obtain the challenge and other options from the server endpoint.
 
-  const options = await _fetch('/auth/signinRequest');
+  const _options = await _fetch('/auth/signinRequest');
 
   // TODO: Add an ability to authenticate with a passkey: Locally verify the user and get a credential.
 
   // Base64URL decode the challenge.
-  options.challenge = base64url.decode(options.challenge);
+  const options = PublicKeyCredential.parseRequestOptionsFromJSON(_options);
 
   // An empty allowCredentials array invokes an account selector by discoverable credentials.
   options.allowCredentials = [];
@@ -162,23 +119,8 @@ export async function authenticate() {
 
   // TODO: Add an ability to authenticate with a passkey: Verify the credential.
 
-  const credential = {};
-  credential.id = cred.id;
-  credential.rawId = cred.id; // Pass a Base64URL encoded ID string.
-  credential.type = cred.type;
-
-  // Base64URL encode some values.
-  const clientDataJSON = base64url.encode(cred.response.clientDataJSON);
-  const authenticatorData = base64url.encode(cred.response.authenticatorData);
-  const signature = base64url.encode(cred.response.signature);
-  const userHandle = base64url.encode(cred.response.userHandle);
-
-  credential.response = {
-    clientDataJSON,
-    authenticatorData,
-    signature,
-    userHandle,
-  };
+  // Encode and serialize the `PublicKeyCredential`.
+  const credential = JSON.stringify(cred);
 
   return await _fetch(`/auth/signinResponse`, credential);
 };
