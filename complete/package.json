@@ -14,7 +14,7 @@
     "@simplewebauthn/server": "^13.1.2",
     "babel-loader": "^10.0.0",
     "base64url": "^3.0.1",
-    "body-parser": "^2.2.1",
+    "body-parser": "^2.3.0",
     "css-loader": "^7.1.2",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
